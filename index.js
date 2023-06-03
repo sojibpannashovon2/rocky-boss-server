@@ -34,6 +34,33 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+        const rockyDBcollection = client.db("rockyBossDB").collection("menu");
+        const reviewDBcollection = client.db("rockyBossDB").collection("reviews");
+        const cartDBcollection = client.db("rockyBossDB").collection("cart");
+
+        //get data from mongodob
+        app.get("/menus", async (req, res) => {
+            // const query = {}
+            const query = rockyDBcollection.find();
+            const result = await query.toArray()
+            res.send(result)
+        })
+        app.get("/reviews", async (req, res) => {
+            // const query = {}
+            const query = reviewDBcollection.find();
+            const result = await query.toArray()
+            res.send(result)
+        })
+
+        //post cart collection into db
+
+        app.post("/carts", async (req, res) => {
+            const item = req.body;
+            console.log(item);
+            const result = await cartDBcollection.insertOne(item)
+            res.send(result)
+        })
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
